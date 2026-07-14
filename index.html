@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loot Jackal — Auth</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 60px 20px;
+           background: #111; color: #eee; }
+    h1 { font-size: 1.4em; }
+    p  { color: #aaa; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1 id="msg">Authenticating…</h1>
+  <p id="sub"></p>
+  <script>
+    const SUPABASE_URL  = "https://ctpbuwqycdbekzumlrrh.supabase.co"
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJ1d3F5Y2RiZWt6dW1scnJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NTEsImV4cCI6MjA5OTYxNzk1MX0.AHmjaEJFRkwJ-70sgvE4_1OGCOSJPg-ExhSscCKck-o"
+
+    async function main() {
+      const hash   = new URLSearchParams(window.location.hash.slice(1))
+      const search = new URLSearchParams(window.location.search)
+      const access_token  = hash.get("access_token")
+      const refresh_token = hash.get("refresh_token")
+      const state         = search.get("state") || hash.get("state")
+
+      if (!access_token || !state) {
+        document.getElementById("msg").textContent = "Authentication failed."
+        document.getElementById("sub").textContent = "Missing token or state. Please try again from the game."
+        return
+      }
+
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/store-auth-tokens`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON },
+          body: JSON.stringify({ state, access_token, refresh_token }),
+        })
+        document.getElementById("msg").textContent = "Authentication successful!"
+        document.getElementById("sub").textContent = "You can close this tab and return to the game."
+      } catch (e) {
+        document.getElementById("msg").textContent = "Authentication failed."
+        document.getElementById("sub").textContent = "Could not reach server. Please try again."
+      }
+    }
+
+    main()
+  </script>
+</body>
+</html>
