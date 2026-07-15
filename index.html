@@ -22,7 +22,7 @@
       const search = new URLSearchParams(window.location.search)
       const access_token  = hash.get("access_token")
       const refresh_token = hash.get("refresh_token")
-      const state         = search.get("state") || hash.get("state")
+      const state         = search.get("polling_state")
 
       if (!access_token || !state) {
         document.getElementById("msg").textContent = "Authentication failed."
