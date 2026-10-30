@@ -29,6 +29,18 @@
     color: var(--gold);
   }
   .login.failed h1 { color: #ff6b6b; }
+  .back {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 14px 24px;
+    font: 14px/1.4 "M41 Lovebit", "Space Mono", monospace;
+    color: var(--night);
+    background: var(--gold);
+    border: 3px solid var(--outline);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--night); background: #ffd54d; }
+  .note { margin: 16px 0 0; font-size: 14px; color: var(--ink-2); }
   @media (max-width: 480px) {
     .login { padding-top: 32px; }
     .logo { width: min(100%, 240px); }
@@ -44,6 +56,10 @@
     <div class="panel">
       <h1 id="msg">Authenticating…</h1>
       <p id="sub"></p>
+      <div id="back" hidden>
+        <a class="back" href="lootjackalloot://login">Return to the game</a>
+        <p class="note">If the game doesn't open, close this tab and go back to the game.</p>
+      </div>
     </div>
   </main>
 </div>
@@ -56,6 +72,7 @@
     document.getElementById("msg").textContent = title
     document.getElementById("sub").textContent = text
     document.getElementById("login").classList.toggle("failed", failed)
+    document.getElementById("back").hidden = false  // also after a failure: the way back to the game to try again
   }
 
   async function main() {
@@ -81,7 +98,9 @@
         show("Authentication failed.", "Please try again from the game.", true)
         return
       }
-      show("Authentication successful!", "You can close this tab and return to the game.", false)
+      show("Authentication successful!", "Returning to the game…", false)
+      // Game versions with the login link come back to the front; older ones ignore it and the note says what to do.
+      window.location.href = "lootjackalloot://login"
     } catch (e) {
       show("Authentication failed.", "Could not reach server. Please try again.", true)
     }
